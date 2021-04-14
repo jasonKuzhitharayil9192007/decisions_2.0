@@ -8,25 +8,25 @@ var bg, bgImg;
 var player, playerAnimation;
 
 var thief, thiefImg;
-var coin, coinAnimation;
+var coin, coinImg;
+var coinGroup
+var score;
 var homeless, homelessImg;
 
 var ground;
 
 var up;
 
-var sbImg
-var sbGroup
+var platform;
 
 function preload()
 {
 
+  coinImg = loadImage("coinImg1.jpeg");
   up = loadAnimation("walkingImg1.png");
   playerAnimation = loadAnimation("walkingImg1.png", "walkingImg2.png", "walkingImg3.png", "walkingImg4.png", "walkingImg5.png", "walkingImg6.png", "walkingImg7.png");
   bgImg = loadImage("bgImg.jpg");
-  sbImg = loadImage("skyblockImg.jpeg");
-
-
+  homelessImg = loadImage("homelessImg.png");
 }
 
 
@@ -42,12 +42,14 @@ function setup() {
    player = createSprite (100,500, 20,20);
    player.addAnimation("movingPlayer",playerAnimation);
 
-   sbGroup = new Group();
-
    //making the ground
    ground = createSprite(width/2, 900,20000,100);
    ground.shapeColor = "green";
  
+   coinGroup = new Group();
+
+   // initializing the score
+   score = 0;
 
 }
 
@@ -79,46 +81,78 @@ camera.x = player.x;
   //making the player move to the left
   if (keyDown(LEFT_ARROW))
   {
-    player.x = player.x-10   
+    player.x = player.x-21; 
     console.log("left");
   }
 
   //making the player move to the right
   if(keyDown(RIGHT_ARROW))
   {
-    player.x = player.x+5
+    player.x = player.x+21;
     console.log("right");
   }
 
-  //stopping the player from falling down while it's on the skyblock
-  if (sbGroup.isTouching(player))
-  {
-    player.velocityY = 0;
+for(var i=0; i<coinGroup.length;i++)
+{
+    if(coinGroup.get(i).isTouching(player))
+    {
+        coinGroup.get(i).destroy();
+        score++;
+    }
+}
 
-  }
-
-
-
+  spawnCoins();
+  spawnHomeless();
+  
   drawSprites();
+
+  //text("Coins Collected:"+score, 250,50);
 }
 
 
 
+function spawnCoins()
+{
+  if(frameCount%180 === 0)
+  {
+   var rand = Math.round(random(10,600));
+   
+    coin = createSprite(rand,0,20,20);
+    coin.addImage(coinImg);
+    coin.scale = 0.5;
+    coin.velocityY = 3;
+    coinGroup.add(coin);
+  }
 
-// function skyblocks()
+}
+
+function spawnHomeless()
+{
+  if(frameCount%300 === 0)
+  {
+      homeless = createSprite(500,800,20,50);
+      homeless.addImage(homelessImg);
+      homeless.scale = 0.3
+      var side = Math.round(random(1,2));
+      if(side === 1)
+      {
+          homeless.x = 25;
+      }
+      else
+      {
+          homeless.x = 650;
+      }
+
+      homeless.lifetime = 150;
+  }
+
+}
+
+// function SpawnThiefs()
 // {
-//   if(frameCount% 30===0)
-//   {
-//     var skyblock = createSprite(1000,Math.round(random(350,550)),20,20);
-//     var invisibleBlock = createSprite(1000,skyblock.y-27,20,10);
-//     skyblock.addImage(sbImg);
-//     skyblock.scale = 0.5
+// if(frameCount%)
+// {
 
-//     skyblock.velocityX = -6.5;
-//     invisibleBlock.velocityX = -6.5;
 
-//     sbGroup.add(skyblock);
-
-//   }
-
+// }  
 // }
